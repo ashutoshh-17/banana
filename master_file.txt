@@ -1,0 +1,435 @@
+
+def dfs(visited, graph, node):
+    if node not in visited:
+        print(node, end=" ")
+        visited.add(node)
+        for neighbour in graph[node]:
+            dfs(visited, graph, neighbour)
+
+def bfs(visited, graph, node, queue):
+    visited.add(node)
+    queue.append(node)
+
+    while queue:
+        s = queue.pop(0)
+        print(s, end=" ")
+        for neighbour in graph[s]:
+            if neighbour not in visited:
+                visited.add(neighbour)
+                queue.append(neighbour)
+
+def main():
+    visited1 = set()
+    visited2 = set()
+    queue = []
+    graph = dict()
+
+    n = int(input("Enter number of nodes: "))
+    for i in range(1, n + 1):
+        graph[i] = []
+
+    e = int(input("Enter number of edges: "))
+    print("Enter each edge (two space-separated numbers):")
+    for _ in range(e):
+        u, v = map(int, input().split())
+        graph[u].append(v)
+        graph[v].append(u)  
+
+    start = int(input("Enter starting node: "))
+    
+    print("\nDFS Traversal:", end=" ")
+    dfs(visited1, graph, start)
+
+    print("\nBFS Traversal:", end=" ")
+    bfs(visited2, graph, start, queue)
+
+if __name__ == "__main__":
+    main()
+
+
+--------------------------X-----------------------------X-----------
+
+def aStarAlgo(start_node, stop_node):
+    open_set = set(start_node)
+    closed_set = set()
+    g = {}
+    parents = {}
+    g[start_node] = 0
+    parents[start_node] = start_node
+
+    while len(open_set) > 0:
+        n = None
+        for v in open_set:
+            if n is None or g[v] + heuristic(v) < g[n] + heuristic(n):
+                n = v
+
+        if n == stop_node or Graph_nodes.get(n) is None:
+            pass
+        else:
+            for (m, weight) in get_neighbors(n):
+                if m not in open_set and m not in closed_set:
+                    open_set.add(m)
+                    parents[m] = n
+                    g[m] = g[n] + weight
+                else:
+                    if g[m] > g[n] + weight:
+                        g[m] = g[n] + weight
+                        parents[m] = n
+                        if m in closed_set:
+                            closed_set.remove(m)
+                            open_set.add(m)
+
+        if n is None:
+            print('Path does not exist!')
+            return None
+
+        if n == stop_node:
+            path = []
+            while parents[n] != n:
+                path.append(n)
+                n = parents[n]
+            path.append(start_node)
+            path.reverse()
+            print('Path found: {}'.format(path))
+            return path
+
+        open_set.remove(n)
+        closed_set.add(n)
+
+    print('Path does not exist!')
+    return None
+
+def get_neighbors(v):
+    return Graph_nodes.get(v, None)
+
+def heuristic(n):
+    H_dist = {
+        'A': 11, 'B': 6, 'C': 5, 'D': 7,
+        'E': 3, 'F': 6, 'G': 5, 'H': 3,
+        'I': 1, 'J': 0
+    }
+    return H_dist[n]
+
+Graph_nodes = {
+    'A': [('B', 6), ('F', 3)],
+    'B': [('A', 6), ('C', 3), ('D', 2)],
+    'C': [('B', 3), ('D', 1), ('E', 5)],
+    'D': [('B', 2), ('C', 1), ('E', 8)],
+    'E': [('C', 5), ('D', 8), ('I', 5), ('J', 5)],
+    'F': [('A', 3), ('G', 1), ('H', 7)],
+    'G': [('F', 1), ('I', 3)],
+    'H': [('F', 7), ('I', 2)],
+    'I': [('E', 5), ('G', 3), ('H', 2), ('J', 3)],
+}
+
+aStarAlgo('A', 'J')
+
+
+
+------------------X--------------------X-------------
+
+
+def prim(adjacency_list):
+    n = len(adjacency_list)
+    visited = [False] * n
+    mst_weight = 0
+    mst_edges = []
+
+    def find_min_edge():
+        min_weight = float('inf')
+        min_edge = None
+        for u in range(n):
+            if visited[u]:
+                for v, weight in adjacency_list[u].items():
+                    if not visited[v] and weight < min_weight:
+                        min_weight = weight
+                        min_edge = (u, v, weight)
+        return min_edge
+
+    visited[0] = True  
+    
+    for _ in range(n - 1):
+        min_edge = find_min_edge()
+        if min_edge is None:
+            break
+        u, v, weight = min_edge
+        mst_edges.append((u, v, weight))
+        mst_weight += weight
+        visited[v] = True  
+
+    print("MST Weight: ", mst_weight)
+    print("MST Edges: ", mst_edges)
+
+
+adjacency_list = [
+    {1: 2, 3: 6},
+    {0: 2, 2: 3, 3: 8, 4: 5},
+    {1: 3, 4: 7},
+    {0: 6, 1: 8, 4: 9},
+    {1: 5, 2: 7, 3: 9}
+]
+
+if __name__ == '__main__':
+    prim(adjacency_list)
+
+
+-----------X----------------------X-----------------X------
+
+
+def solveNQueens(n : int):
+    col = set()
+    posDiag = set() 
+    negDiag = set() 
+
+    res = []
+    board = [['.' for _ in range(n)] for _ in range(n)]
+
+    def backtrack(r):
+        if (r == n):
+            res.append([''.join(row) for row in board])
+            return
+        for c in range(n):
+            if (c in col or r+c in posDiag or r-c in negDiag):
+                continue
+            col.add(c)
+            posDiag.add(r + c)
+            negDiag.add(r - c)
+            board[r][c] = 'Q'
+            backtrack(r + 1)
+            col.remove(c)
+            posDiag.remove(r + c)
+            negDiag.remove(r - c)
+            board[r][c] = '.'
+    backtrack(0)
+    return res
+
+def printSolutions(boards):
+    for board in enumerate(boards):
+        print(f"Solution: {board[0]+1}")
+        for row in board[1]:
+            for col in row:
+                print(col, end=' ')
+            print()
+        print()
+
+if __name__ == "__main__":
+    boards = solveNQueens(4)
+    printSolutions(boards)
+
+
+
+--------------X--------------------X------------------X---------
+
+
+import nltk
+from nltk.chat.util import Chat, reflections
+
+pairs=[
+    
+    [
+        r"My name is (.*)",
+        ["Hello %1, How are you ?"]
+    ],
+    
+    [
+        r"Hi|Hello|Hey there|Hola|What up",
+        ["Hello there! What's your name?"]
+    ],
+    [
+        r"What is your name ?",
+        ["I am a Chatbot, I don't have a name, but you can call me friend!",]
+    ],
+    [
+        r"How are you (.*)?",
+        ["I'm doing good How about You ?",]
+    ],
+    [
+        r"sorry (.*)",
+        ["Its alright","Its OK, never mind",]
+    ],
+    [
+        r"I am fine",
+        ["Great to hear that, How can I help you?",]
+    ],
+    [
+        r"I (.*)? good",
+        ["Nice to hear that","How can I help you?:)",]
+    ],
+    [
+        r"(.*) age?",
+        ["I'm a computer program dude. Find better things to ask",]
+    ],
+    [
+        r"What (.*) want ?",
+        ["Make me an offer I can't refuse",]
+    ],
+    [
+        r"(.*) created ?",
+        ["I was created using Python's NLTK library",]
+    ],
+    [
+        r"(.*) (location|city) ?",
+        ['Area 51, USA',]
+    ],
+    [
+        r"How is weather in (.*)?",
+        ["Weather in %1 is awesome like always","It's too hot here in %1","It's freezing cold here in %1","Never even heard about %1"]
+    ],
+    [
+        r"I work in (.*)?",
+        ["%1 is an Amazing company. But they are in huge loss these days.",]
+    ],
+    [
+        r"(.*)raining in (.*)",
+        ["No rain since last week here in %2","Damn its raining too much here in %2"]
+    ],
+    [
+        r"how (.*) health(.*)",
+        ["I'm a computer program, so I'm always healthy ",]
+    ],
+    [
+        r"Who (.*) (moviestar|actor)?",
+        ["Brad Pitt"]
+    ],
+    [
+        r"I am looking for online guides and courses to learn data science, can you suggest?",
+        ["You should start reading the Daily Profet for latest updates from the magical world."]
+    ],
+    [
+        r"quit",
+        ["Thank you!"]
+    ],
+    
+
+]
+
+def chat():
+    print("Hey there! I am a ChatBot at your service")
+    chat = Chat(pairs, reflections)
+    chat.converse()
+
+if __name__== "__main__":
+    chat()
+
+
+
+-----------------X------------------------X-------------------
+
+
+class ExpertSystem:
+    def __init__(self):
+        self.facts = {}
+        self.rules = {}
+
+    def add_fact(self, fact, value):
+        self.facts[fact] = value
+
+    def add_rule(self, rule_name, condition):
+        self.rules[rule_name] = condition
+
+    def infer(self):
+        for rule, condition in self.rules.items():
+            if all(self.facts.get(fact) == value for fact, value in condition.items()):
+                return rule
+        return "No matching rule found"
+
+
+def get_bool_input(prompt):
+    while True:
+        val = input(prompt + " (yes/no): ").lower()
+        if val in ['yes', 'y']:
+            return True
+        elif val in ['no', 'n']:
+            return False
+        else:
+            print("Please enter yes or no.")
+
+def main():
+    expert = ExpertSystem()
+
+    print("=== Expert System Setup ===")
+    
+    num_facts = int(input("Enter number of facts: "))
+    for _ in range(num_facts):
+        fact = input("Enter fact name: ")
+        value = get_bool_input(f"Is '{fact}' true?")
+        expert.add_fact(fact, value)
+
+    num_rules = int(input("\nEnter number of rules: "))
+    for _ in range(num_rules):
+        rule_name = input("Enter rule name (e.g., 'play tennis'): ")
+        num_conditions = int(input(f"How many conditions for rule '{rule_name}'? "))
+        condition = {}
+        for _ in range(num_conditions):
+            fact = input(" - Enter condition fact name: ")
+            value = get_bool_input(f"   Is condition '{fact}' expected to be true?")
+            condition[fact] = value
+        expert.add_rule(rule_name, condition)
+
+    print("\n=== Inference Result ===")
+    decision = expert.infer()
+    print("Decision:", decision)
+
+
+if __name__ == "__main__":
+    main()
+
+
+-------------X-------------------X--------------------X------------
+
+
+
+def solveNQueens(n: int):
+    res = []
+    board = [['.' for _ in range(n)] for _ in range(n)]
+
+    def isSafe(row, col):
+        for i in range(row):
+            if board[i][col] == 'Q':
+                return False
+
+        i, j = row, col
+        while i >= 0 and j < n:
+            if board[i][j] == 'Q':
+                return False
+            i -= 1
+            j += 1
+
+        i, j = row, col
+        while i >= 0 and j >= 0:
+            if board[i][j] == 'Q':
+                return False
+            i -= 1
+            j -= 1
+
+        return True
+
+    def backtrack(row):
+        if row == n:
+            res.append([''.join(r) for r in board])
+            return  
+
+        for col in range(n):
+            if isSafe(row, col):
+                board[row][col] = 'Q'
+                backtrack(row + 1)
+                board[row][col] = '.'  
+
+    backtrack(0)
+    return res
+
+
+def printSolutions(boards):
+    for index, board in enumerate(boards):
+        print(f"Solution {index + 1}")
+        for row in board:
+            print(' '.join(row))
+        print()
+
+
+if __name__ == "__main__":
+    boards = solveNQueens(4)
+    printSolutions(boards)
+
+
+--------------X-------------------X------------------------X--------

@@ -1,0 +1,57 @@
+class ExpertSystem:
+    def __init__(self):
+        self.facts = {}
+        self.rules = {}
+
+    def add_fact(self, fact, value):
+        self.facts[fact] = value
+
+    def add_rule(self, rule_name, condition):
+        self.rules[rule_name] = condition
+
+    def infer(self):
+        for rule, condition in self.rules.items():
+            if all(self.facts.get(fact) == value for fact, value in condition.items()):
+                return rule
+        return "No matching rule found"
+
+
+def get_bool_input(prompt):
+    while True:
+        val = input(prompt + " (yes/no): ").lower()
+        if val in ['yes', 'y']:
+            return True
+        elif val in ['no', 'n']:
+            return False
+        else:
+            print("Please enter yes or no.")
+
+def main():
+    expert = ExpertSystem()
+
+    print("=== Expert System Setup ===")
+    
+    num_facts = int(input("Enter number of facts: "))
+    for _ in range(num_facts):
+        fact = input("Enter fact name: ")
+        value = get_bool_input(f"Is '{fact}' true?")
+        expert.add_fact(fact, value)
+
+    num_rules = int(input("\nEnter number of rules: "))
+    for _ in range(num_rules):
+        rule_name = input("Enter rule name (e.g., 'play tennis'): ")
+        num_conditions = int(input(f"How many conditions for rule '{rule_name}'? "))
+        condition = {}
+        for _ in range(num_conditions):
+            fact = input(" - Enter condition fact name: ")
+            value = get_bool_input(f"   Is condition '{fact}' expected to be true?")
+            condition[fact] = value
+        expert.add_rule(rule_name, condition)
+
+    print("\n=== Inference Result ===")
+    decision = expert.infer()
+    print("Decision:", decision)
+
+
+if __name__ == "__main__":
+    main()
